@@ -4,23 +4,20 @@
 
 package cgolock
 
-var c chan bool
+var c chan struct{}
 
 func Init(count int) {
 	if c != nil {
 		panic("Cannot call cgolock.Init() twice")
 	}
 
-	c = make(chan bool, count)
-	for i := 0; i < count; i++ {
-		c <- true
-	}
+	c = make(chan struct{}, count)
 }
 
 func Lock() {
-	<- c
+	c <- struct{}{}
 }
 
 func Unlock() {
-	c <- true
+	<- c
 }
